@@ -1,0 +1,203 @@
+body {
+    position: relative;
+    background-color: #dcdcdd;
+}
+
+.text-center a {
+    margin-left: 30px;
+}
+
+.modal-content {
+    padding-bottom: 12px;
+}
+
+.header {
+    height: 80px;
+}
+
+.left {
+    /*background-color: red;*/
+    width: 350px;
+    height: 400px;
+    float: left;
+    margin-right: 40px;
+}
+
+.list-one {
+    width: 350px;
+    /*background: #F3F3F3;*/
+    background: #f8f8f8;
+    /*background: #f8b04b;*/
+    /*background: red;*/
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.list-two {
+    width: 350px;
+    /*background: #F3F3F3;*/
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.list-three {
+    width: 350px;
+    /*background: navajowhite;*/
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.right {
+    float: left;
+    width: 750px;
+    padding: 10px;
+    border-radius: 5px;
+    background: #f8f8f8;
+    /*background: navajowhite;*/
+    /*background: yellowgreen;*/
+}
+
+.info > label {
+    padding: 10px 0 0 10px;
+
+}
+
+.content {
+    height: auto;
+    width: 1500px;
+    margin: auto;
+    padding: 0 150px;
+}
+
+ul li {
+    list-style: none;
+}
+
+#week {
+    padding-bottom: 20px;
+}
+
+#page {
+    margin: 0 35px 20px 20px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.info > ul > li:last-child #page {
+    border: 0;
+}
+
+.inputLine > select {
+    width: 269px;
+    height: 32px;
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 16px;
+}
+
+a:hover {
+    text-decoration: none;
+    color: red;
+}
+
+a {
+    color: #9513ff;
+    cursor: pointer;
+}
+
+#tutorPage {
+    height: auto;
+    padding: 0 150px;
+}
+
+div strong {
+    margin: 0 10px;
+}
+
+.line div {
+    margin-top: 20px;
+}
+
+#tutorInfo {
+    background: white;
+    padding: 50px 50px;
+    margin: 0 20px;
+    font-size: 17px;
+}
+
+#tutorInfo div {
+    padding: 15px 15px;
+    margin: 0 20px;
+}
+
+#tutorInfo div a {
+    color: red;
+}
+
+#recruitPage {
+    height: auto;
+    width: 1500px;
+    margin: auto;
+    padding: 0 150px;
+}
+
+#recruitList {
+    margin: 0 20px 0 50px;
+    font-size: 17px;
+}
+
+#recruitList div div ul li {
+    background: #333;
+    width: 100px;
+    padding: 6px 2px;
+    border-radius: 7px;
+}
+
+#recruitList div div ul li a {
+    font-size: 15px;
+    color: #9d9d9d;
+}
+
+.person_right {
+    float: left;
+    width: 900px;
+    border-radius: 9px;
+    height: 700px;
+    background: white;
+    margin: 0 35px 0 20px;
+}
+
+#repassword {
+    padding: 100px 0 0 0;
+}
+
+#repassword div {
+    padding: 0 0 10px;
+}
+
+#recruitInfo {
+    padding: 50px 0 0 50px;
+}
+
+#recruitInfo div {
+    padding: 10px 0 10px 0;
+    font-size: 16px;
+}
+
+#recruitInfo div strong {
+    margin: 0 10px;
+    font-size: 17px;
+}
+
+.messageLine {
+    padding: 23px;
+    font-size: 18px;
+}
+
+

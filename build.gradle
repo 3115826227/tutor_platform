@@ -1,0 +1,16 @@
+defaultTasks 'push'
+
+project.group = 'data-brain'
+
+ext {
+    env = System.getenv()
+}
+
+task build(type: Exec) {
+    workingDir '.'
+    commandLine 'docker', 'build', '-t', "${env.DOCKER_REPO_HZ}/${project.group}/${project.name}:${env.TAG_VALUE}", '-f', 'Dockerfile', '.'
+}
+
+task push(type: Exec, dependsOn: 'build') {
+    commandLine 'docker', 'push', "${env.DOCKER_REPO_HZ}/${project.group}/${project.name}:${env.TAG_VALUE}"
+}

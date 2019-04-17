@@ -1,0 +1,5 @@
+.swp
+*.log
+.idea/*
+*.DS_Store
+tutor_platform

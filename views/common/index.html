@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>响应式导航条</title>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <link rel="stylesheet" href="../../static/css/base.css">
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="../../static/js/jquery.min.js"></script>
+    <script src="../../static/js/city.js"></script>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <nav class="nav navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <!--在移动端的时候导航条折叠起来，三横的样式出现，点击该样式可以显示或隐藏导航条上的内容-->
+                    <button class="navbar-toggle" data-toggle="collapse" data-target="#menu">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="#" class="navbar-brand">宝宝煎米果</a>
+                </div>
+                <div id="menu" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/">家教</a></li>
+                        <li><a href="#">平台规则声明</a></li>
+                        <!--下拉菜单功能的实现-->
+                    </ul>
+                    <div v-if="blag==false">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                学生入口<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a data-toggle="modal" data-target="#studentLogin"><span
+                                            class="glyphicon glyphicon-user">&nbsp;</span>学生用户登录</a></li>
+                                    <li><a data-toggle="modal" data-target="#studentRegister"><span
+                                            class="glyphicon glyphicon-log-in">&nbsp;</span>学生用户注册</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                招聘入口<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a data-toggle="modal" data-target="#recruitLogin"><span
+                                            class="glyphicon glyphicon-user">&nbsp;</span>招聘用户登录</a></li>
+                                    <li><a data-toggle="modal" data-target="#recruitRegister"><span
+                                            class="glyphicon glyphicon-log-in">&nbsp;</span>招聘用户注册</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right" v-else="blag">
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" v-on:click="personal">
+                            您好，${name}</a>
+                        </li>
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" v-on:click="logout">
+                            退出登录</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- 注册窗口 -->
+        <div id="studentRegister" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-title">
+                        <h1 class="text-center">学生用户注册</h1>
+                    </div>
+                    <form class="form-group" action="">
+                        <div class="modal-body">
+                            <div class="form-horizontal" align="center">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="username">用户名</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" type="text" v-model="username"
+                                               placeholder="6-15位字母或数字">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="password">密码</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" type="password" v-model="password"
+                                               placeholder="至少6位字母或数字">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="repassword">再次输入密码</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" type="password" v-model="repassword"
+                                               placeholder="至少6位字母或数字">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="name">昵称</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" type="text" v-model="name" placeholder="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="gender">性别</label>
+                                    <div class="col-sm-6">
+                                        <div id="gender" align="left">
+                                            &nbsp;&nbsp;
+                                            <input type="radio" v-model="gender" value="男">&nbsp;&nbsp;男
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <input type="radio" v-model="gender" value="女">&nbsp;&nbsp;女
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="phone">电话</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" type="text" v-model="phone"
+                                               placeholder="6-15位字母或数字">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="">城市</label>
+                                    <div class="col-sm-6">
+                                        <div class="inputLine">
+                                            <select v-model="province" @change="selectProvince">
+                                                <option :value="item" v-for="item in Local">
+                                                    ${item.name}
+                                                </option>
+                                            </select>
+                                            <select v-model="cityName" @change="selectCity">
+                                                <option :value="item" v-for="item in province.city">
+                                                    ${item.name}
+                                                </option>
+                                            </select>
+                                            <select v-model="area">
+                                                <option :value="item" v-for="item in cityName.area">
+                                                    ${item}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-primary" type="submit" v-on:click="studentRegister">提交</button>
+                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                            <a href="" data-toggle="modal" data-dismiss="modal"
+                               data-target="#studentLogin">已有账号？点我登录</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="studentLogin" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    <h3 class="text-center">学生用户登录</h3>
+                </div>
+                <br>
+                <div class="modal-body">
+                    <div class="form-horizontal" align="center">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label" for="username">用户名</label>
+                            <div class="col-sm-6">
+                                <input class="form-control" type="text" v-model="username"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label" for="password">密码</label>
+                            <div class="col-sm-6">
+                                <input class="form-control" type="password" v-model="password"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="text-center">
+                            <button class="btn btn-primary" v-on:click="studentLogin" data-dismiss="modal">登录</button>
+                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                            <br><br>
+                            <a href="" data-toggle="modal" data-dismiss="modal"
+                               data-target="#studentRegister">还没有账号？点我注册</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 注册窗口 -->
+    <div id="recruitRegister" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    <h3 class="text-center">招聘用户注册</h3>
+                </div>
+                <form class="form-group" action="">
+                    <div class="modal-body">
+                        <div class="form-horizontal" align="center">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="username">用户名</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" v-model="username"
+                                           placeholder="6-15位字母或数字">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="password">密码</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="password" v-model="password"
+                                           placeholder="至少6位字母或数字">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="repassword">再次输入密码</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="password" v-model="repassword"
+                                           placeholder="至少6位字母或数字">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="name">昵称</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" v-model="name" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="gender">性别</label>
+                                <div class="col-sm-6">
+                                    <div id="gender" align="left">
+                                        &nbsp;&nbsp;
+                                        <input type="radio" v-model="gender" value="男">&nbsp;&nbsp;男
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <input type="radio" v-model="gender" value="女">&nbsp;&nbsp;女
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="phone">电话</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" v-model="phone"
+                                           placeholder="6-15位字母或数字">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="">城市</label>
+                                <div class="col-sm-6">
+                                    <div class="inputLine">
+                                        <select v-model="province" @change="selectProvince">
+                                            <option :value="item" v-for="item in Local">
+                                                ${item.name}
+                                            </option>
+                                        </select>
+                                        <select v-model="cityName" @change="selectCity">
+                                            <option :value="item" v-for="item in province.city">
+                                                ${item.name}
+                                            </option>
+                                        </select>
+                                        <select v-model="area">
+                                            <option :value="item" v-for="item in cityName.area">
+                                                ${item}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary" type="submit" v-on:click="recruitRegister">提交</button>
+                        <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                        <a href="" data-toggle="modal" data-dismiss="modal"
+                           data-target="#recruitLogin">已有账号？点我登录</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="recruitLogin" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    <h3 class="text-center">招聘用户登录</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal" align="center">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label" for="username">用户名</label>
+                            <div class="col-sm-6">
+                                <input class="form-control" type="text" v-model="username"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label" for="password">密码</label>
+                            <div class="col-sm-6">
+                                <input class="form-control" type="password" v-model="password"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="text-center">
+                            <button class="btn btn-primary" v-on:click="recruitLogin" data-dismiss="modal">登录</button>
+                            <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                            <br><br>
+                            <a href="" data-toggle="modal" data-dismiss="modal"
+                               data-target="#recruitRegister">还没有账号？点我注册</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="left">
+            <div class="list-one">
+                <label>最近热门</label>
+                <br><br>
+                <ul>
+                    <li v-for="data in TopData">
+                        <a v-on:click="tutor(data.m_id)">${data.local} ${data.student_level} ${data.salary}</a>
+                        <br><br>
+                    </li>
+                </ul>
+            </div>
+            <div class="list-two">
+                <label>三日最新</label>
+                <br><br>
+                <ul>
+                    <li v-for="data in WeekData">
+                        <div id="week"><a v-on:click="tutor(data.m_id)">${data.local} ${data.student_level}
+                            ${data.salary}</a></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="list-three">
+                <label>薪酬排行</label>
+                <br><br>
+                <ul>
+                    <li v-for="data in SalaryData">
+                        <div id="salary"><a></a></div>
+                        <br><br>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="right">
+            <div class="info">
+                <label>招聘学员库</label>
+                <br><br>
+                <ul>
+                    <li v-for="data in PageData">
+                        <div id="page">
+                            <div>
+                                <div class="col-md-4">
+                                    <strong>编号:</strong>${data.m_id}
+                                </div>
+                                <div class="col-md-5">
+                                    <strong>学生情况:</strong>${data.student_level}
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>学生性别:</strong>${data.student_gender}
+                                </div>
+                            </div>
+                            <div class="line">
+                                <div class="col-md-4">
+                                    <strong>薪酬:</strong>${data.salary}
+                                </div>
+                                <div class="col-md-5">
+                                    <strong>地点:</strong>${data.local}
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                            </div>
+                            <div align="right">
+                                <button class="btn btn-info" v-on:click="tutor(data.m_id)">点击查看</button>
+                            </div>
+                            <br>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    var vm = new Vue({
+        el: "#app",
+        delimiters: ['${', '}'],
+        data: {
+            province: "",
+            cityName: "",
+            area: "",
+            Local: Province,
+            blag: false,
+            PageData: [],
+            TopData: [],
+            WeekData: [],
+            SalaryData: [],
+            username: "",
+            password: "",
+            repassword: "",
+            name: "",
+            gender: "",
+            phone: "",
+            infoUrl: "",
+            tokenName: "",
+            getInfoUrl: "",
+            getPersonUrl: "",
+            getLogoutUrl: "",
+            account_id: "",
+            user_id: ""
+        },
+        mounted: function () {
+            this.topTutor();
+            this.WeekTutor();
+            this.pageTutor();
+            this.getInfo();
+        },
+        methods: {
+            selectProvince: function (value) {
+                this.cityName = this.province.city[0];
+                this.area = this.cityName.area[0];
+            },
+            selectCity: function (value) {
+                this.area = this.cityName.area[0];
+            },
+            topTutor: function () {
+                var that = this;
+                $.ajax({
+                    url: "/query_top_tutor",
+                    type: "get",
+                    error: function (e) {
+                    },
+                    success: function (data) {
+                        that.TopData = data.data.list;
+                    }
+                })
+            },
+            WeekTutor: function () {
+                var that = this;
+                $.ajax({
+                    url: "/query_week_tutor",
+                    type: "get",
+                    error: function (e) {
+                    },
+                    success: function (data) {
+                        that.WeekData = data.data.list;
+                    }
+                })
+            },
+            pageTutor: function () {
+                var that = this;
+                $.ajax({
+                    url: "/query_page_tutor",
+                    type: "get",
+                    contentType: "application/x-www-form-urlencoded:charset=UTF-8",
+                    data: {
+                        city: encodeURI("上海市"),
+                        page: "1",
+                        page_size: "8"
+                    },
+                    error: function (e) {
+                    },
+                    success: function (data) {
+                        that.PageData = data.data.list;
+                    }
+                })
+            },
+            studentLogin: function () {
+                var login = {
+                    username: this.username,
+                    password: this.password
+                };
+                $.ajax({
+                    url: "/student/login",
+                    type: "post",
+                    data: login,
+                    error: function (e) {
+                        console.log(e);
+                        alert("No");
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            localStorage.setItem("studentToken", data.token);
+                            window.location.href = "/"
+                        }
+                    }
+                })
+            },
+            studentRegister: function () {
+                var Data = {
+                    username: this.username,
+                    password: this.password,
+                    repassword: this.repassword,
+                    name: this.name,
+                    gender: this.gender,
+                    phone: this.phone,
+                    city: JSON.stringify({
+                        province: this.province.name,
+                        city: this.cityName.name,
+                        district: this.area
+                    })
+                };
+                $.ajax({
+                    url: "/student/register",
+                    type: "post",
+                    data: Data,
+                    error: function (e) {
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                        }
+                    }
+                })
+            },
+            getInfo: function () {
+                var that = this;
+                var studentToken = localStorage.getItem("studentToken");
+                var recruitToken = localStorage.getItem("recruitToken");
+                if (studentToken != null || recruitToken != null) {
+                    var infoUrl = studentToken != null ? "/student" : "/recruit";
+                    var token = studentToken != null ? studentToken : recruitToken;
+                    that.tokenName = studentToken != null ? "studentToken" : "recruitToken";
+                    that.getInfoUrl = infoUrl + "/info";
+                    that.getPersonUrl = infoUrl + "/personal";
+                    that.getLogoutUrl = infoUrl + "/logout";
+                    $.ajax({
+                        url: that.getInfoUrl,
+                        type: "get",
+                        dataType: "json",
+                        headers: {'token': 'Bearer ' + token},
+                        error: function (e) {
+                            console.log(e);
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            if (data.code == 200) {
+                                that.blag = true;
+                                that.name = data.data.name;
+                                that.account_id = data.data.account_id;
+                                that.user_id = data.data.user_id;
+                            }
+                        }
+                    });
+                }
+            },
+            recruitLogin: function () {
+                var login = {
+                    username: this.username,
+                    password: this.password
+                };
+                $.ajax({
+                    url: "/recruit/login",
+                    type: "post",
+                    data: login,
+                    error: function (e) {
+                        console.log(e);
+                        alert("No");
+                    },
+                    success: function (data) {
+                        console.log(data.code);
+                        if (data.code == 200) {
+                            localStorage.setItem("recruitToken", data.token);
+                            window.location.href = "/"
+                        }
+                    }
+                })
+            },
+            recruitRegister: function () {
+                alert("recruitRegister");
+            },
+            logout: function () {
+                var that = this;
+                var token = localStorage.getItem(this.tokenName);
+                $.ajax({
+                    url: this.getLogoutUrl,
+                    type: "get",
+                    dataType: "json",
+                    headers: {'token': 'Bearer ' + token},
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                    }
+                });
+                localStorage.removeItem(this.tokenName);
+                that.blag = false;
+                window.location.href = "/"
+            },
+            tutor: function (id) {
+                window.location.href = "/tutor_page";
+                localStorage.setItem("id", id);
+            },
+            personal: function () {
+                window.location.href = this.getPersonUrl + "?user_id=" + this.user_id + "&account_id=" + this.account_id;
+            }
+        }
+    })
+</script>
+</body>
+</html>
