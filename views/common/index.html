@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>响应式导航条</title>
+    <script type="text/javascript" src="../../static/js/jquery.min.js"></script>
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <!-- 可选的Bootstrap主题文件（一般不用引入） -->
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
@@ -11,9 +12,9 @@
     <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../static/js/bootstrap-paginator.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="../../static/js/jquery.min.js"></script>
-    <script src="../../static/js/city.js"></script>
+    <script type="text/javascript" src="../../static/js/city.js"></script>
 </head>
 <body>
 <div id="app">
@@ -375,7 +376,7 @@
                 </ul>
             </div>
         </div>
-        <div class="right">
+        <div class="right" style="width: 800px;">
             <div class="info">
                 <label>招聘学员库</label>
                 <br><br>
@@ -410,6 +411,9 @@
                         </div>
                     </li>
                 </ul>
+                <div id="pageTool" align="right">
+                    <ul id="page"></ul>
+                </div>
             </div>
         </div>
     </div>
@@ -443,12 +447,14 @@
             getPersonUrl: "",
             getLogoutUrl: "",
             account_id: "",
-            user_id: ""
+            user_id: "",
+            page: 1,
+            page_size: 7
         },
         mounted: function () {
             this.topTutor();
             this.WeekTutor();
-            this.pageTutor();
+            this.pageTutor(1);
             this.getInfo();
         },
         methods: {
@@ -491,13 +497,30 @@
                     contentType: "application/x-www-form-urlencoded:charset=UTF-8",
                     data: {
                         city: encodeURI("上海市"),
-                        page: "1",
-                        page_size: "8"
+                        page: this.page,
+                        page_size: this.page_size,
                     },
                     error: function (e) {
                     },
                     success: function (data) {
                         that.PageData = data.data.list;
+                        that.currentPage = data.data.conf.page;
+                        that.numberOfPages = data.data.conf.page_size;
+                        that.totalPages = data.data.conf.total_page;
+                        console.log(data);
+                        $("#page").bootstrapPaginator({
+                            bootstrapMajorVersion: 3, //对应的bootstrap版本
+                            currentPage: that.currentPage, //当前页数
+                            numberOfPages: that.numberOfPages, //每次显示页数
+                            totalPages: that.totalPages, //总页数
+                            shouldShowPage: true, //是否显示该按钮
+                            useBootstrapTooltip: false,
+                            onPageClicked: function (event, originalEvent, type, page) {
+                                that.page = page;
+                                that.pageTutor();
+                                console.log(data);
+                            }
+                        });
                     }
                 })
             },

@@ -51,6 +51,14 @@ type RecruitInfoResponse struct {
 
 type TutorResponse struct {
 	List []TutorInfo `json:"list"`
+	Conf Conf        `json:"conf"`
+}
+
+type Conf struct {
+	Page      int `json:"page"`
+	PageSize  int `json:"page_size"`
+	TotalNum  int `json:"total_num"`
+	TotalPage int `json:"total_page"`
 }
 
 type TutorInfo struct {

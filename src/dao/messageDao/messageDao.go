@@ -216,8 +216,26 @@ func QueryPageTutor(city string, page, pageSize int) interface{} {
 		tutorInfo.AppointmentNumber = message.AppointmentNumber
 		tutorResponseList = append(tutorResponseList, tutorInfo)
 	}
+	res, err = DB.Query(sql.QueryPageMessageNumSQL)
+	if err != nil {
+		return common.FailResponse(code.DBQueryErrorCode)
+	}
+	num := common.StrToInt(string(res[0]["num"]))
+	var totalNum int
+	if num >= page*pageSize {
+		totalNum = pageSize
+	} else {
+		totalNum = num - (page-1)*pageSize
+	}
+	conf := response.Conf{
+		Page:      page,
+		PageSize:  pageSize,
+		TotalNum:  totalNum,
+		TotalPage: (num + pageSize - 1) / pageSize,
+	}
 	return common.SuccessResponse(response.TutorResponse{
 		List: tutorResponseList,
+		Conf: conf,
 	})
 }
 

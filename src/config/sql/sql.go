@@ -7,11 +7,12 @@ import (
 )
 
 const (
-	QueryWeekMessageSQL = "select * from message"
-	QueryTutorSQL       = "select * from tutor "
-	QueryMessageSQL     = "select * from message "
-	QueryPageMessageSQL = "select * from message"
-	QueryStudentSQL     = "select * from student"
+	QueryWeekMessageSQL    = "select * from message"
+	QueryTutorSQL          = "select * from tutor "
+	QueryMessageSQL        = "select * from message "
+	QueryPageMessageSQL    = "select * from message"
+	QueryPageMessageNumSQL = "select count(*) as num from message where city='上海市';"
+	QueryStudentSQL        = "select * from student"
 )
 
 func QueryPageWhereCitySQL(city string, page int, pageSize int) string {
