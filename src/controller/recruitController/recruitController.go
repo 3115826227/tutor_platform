@@ -3,6 +3,8 @@ package recruitController
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 	"tutor_platform/src/common"
 	"tutor_platform/src/config"
 	"tutor_platform/src/config/code"
@@ -17,30 +19,31 @@ import (
 	"tutor_platform/src/data/studentData"
 	"tutor_platform/src/response"
 	"tutor_platform/src/util/redis"
-	"net/http"
-	"time"
 )
 
 func RecruitPersonal(c *gin.Context) {
-	commonController.Personal(c, config.RecruitPersonalHTML, config.IndexHTML)
+	commonController.CommonEnterHomePage(c, config.RecruitPersonalHTML, config.IndexHTML)
 }
 
-func Info(c *gin.Context) {
-	c.JSON(http.StatusOK, commonController.GetInfo(c))
+func BaseInfo(c *gin.Context) {
+	c.JSON(http.StatusOK, commonController.CommonGetUserBaseInfo(c))
 }
 
 func Logout(c *gin.Context) {
-	c.JSON(http.StatusOK, commonController.Logout(c))
+	c.JSON(http.StatusOK, commonController.CommonLogout(c))
 }
 
 func Register(c *gin.Context) {
-	commonController.Register(c, config.RecruitIdentify)
+	commonController.CommonRegister(c, config.RecruitIdentify)
 }
 
 func UpdateLogin(c *gin.Context) {
-	commonController.UpdateLogin(c, config.RecruitIdentify)
+	commonController.CommonUpdateLogin(c, config.RecruitIdentify)
 }
 
+/*
+	招聘用户查看个人信息
+*/
 func RecruitLookOwnInfo(c *gin.Context) {
 	userId := commonController.GetId(c)
 	user := commonData.User{
@@ -69,6 +72,9 @@ func RecruitLookOwnInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, common.SuccessResponse(recruitResponse))
 }
 
+/*
+	招聘用户更新个人信息
+*/
 func RecruitUpdateOwnInfo(c *gin.Context) {
 	userId := commonController.GetId(c)
 	username := c.PostForm("username")
@@ -103,11 +109,41 @@ func RecruitUpdateOwnInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, recruitDao.UpdateRecruitInfo(&recruit))
 }
 
-func LookStudentContact(c *gin.Context) {
+/*
+	招聘用户查看自己发布的招聘信息列表
+*/
+func RecruitLookMessageList(c *gin.Context) {
+	userId := commonController.GetId(c)
+	c.JSON(http.StatusOK, messageDao.QueryMessageList(userId))
+}
+
+/*
+	招聘用户查看具体招聘信息被预约列表
+*/
+func RecruitLookMessageAppointmentList(c *gin.Context) {
+	userId := commonController.GetId(c)
+	mId := c.Query("m_id")
+	message := messageData.Message{
+		Mid: mId,
+	}
+	ok := messageDao.FindMessage(&message)
+	if ok == false || userId != message.OwnAccountId {
+		c.JSON(http.StatusOK, common.FailResponse(code.AppointmentQueryErrorCode))
+		return
+	}
+	messageKey := fmt.Sprintf("%v:%v", config.MessageAppointmentKey, mId)
+	studentList := redis.SMembers(messageKey)
+	c.JSON(http.StatusOK, studentDao.BatchQueryStudentInfo(studentList))
+}
+
+/*
+	招聘用户查看被预约的学生用户联系方式
+*/
+func RecruitLookStudentContact(c *gin.Context) {
 	userId := commonController.GetId(c)
 	studentId := c.Query("student_id")
 	mId := c.Query("m_id")
-	if JudgeAppointmentExist(userId, studentId, mId) == false {
+	if commonController.JudgeAppointmentExist(userId, studentId, mId) == false {
 		c.JSON(http.StatusOK, common.FailResponse(code.AppointmentQueryErrorCode))
 		return
 	}
@@ -124,43 +160,4 @@ func LookStudentContact(c *gin.Context) {
 		Phone:  student.Phone,
 	}
 	c.JSON(http.StatusOK, common.SuccessResponse(phoneResponse))
-}
-
-func JudgeAppointmentExist(recruitId, studentId, mId string) bool {
-	message := messageData.Message{
-		Mid: mId,
-	}
-	ok := messageDao.FindMessage(&message)
-	if ok == false || recruitId != message.OwnAccountId {
-		return false
-	}
-	studentKey := fmt.Sprintf("%v:%v", config.StudentAppointmentKey, studentId)
-	messageKey := fmt.Sprintf("%v:%v", config.MessageAppointmentKey, mId)
-	if redis.SJudgeExist(studentKey, mId) == false || redis.SJudgeExist(messageKey, mId) == false {
-		return false
-	}
-	return true
-}
-
-func RecruitLookMessageList(c *gin.Context) {
-	userId := commonController.GetId(c)
-	page := common.StrToInt(c.Query("page"))
-	pageSize := common.StrToInt(c.Query("page_size"))
-	c.JSON(http.StatusOK, messageDao.QueryMessageList(userId, page, pageSize))
-}
-
-func RecruitLookMessageAppointmentList(c *gin.Context) {
-	userId := commonController.GetId(c)
-	mId := c.Query("m_id")
-	message := messageData.Message{
-		Mid: mId,
-	}
-	ok := messageDao.FindMessage(&message)
-	if ok == false || userId != message.OwnAccountId {
-		c.JSON(http.StatusOK, common.FailResponse(code.AppointmentQueryErrorCode))
-		return
-	}
-	messageKey := fmt.Sprintf("%v:%v", config.MessageAppointmentKey, mId)
-	studentList := redis.SMembers(messageKey)
-	c.JSON(http.StatusOK, studentDao.BatchQueryStudentInfo(studentList))
 }

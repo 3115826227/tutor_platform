@@ -3,6 +3,8 @@ package router
 import (
 	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 	"tutor_platform/src/common"
 	"tutor_platform/src/config"
 	"tutor_platform/src/controller/messageController"
@@ -11,8 +13,6 @@ import (
 	"tutor_platform/src/data/commonData"
 	"tutor_platform/src/router/publicRouterUrl"
 	"tutor_platform/src/util/redis"
-	"net/http"
-	"time"
 )
 
 func RecruitRouter(router *gin.Engine) {
@@ -89,14 +89,12 @@ func RecruitRouter(router *gin.Engine) {
 		recruitRouter.GET(publicRouterUrl.RecruitAuthorized, func(c *gin.Context) {
 			c.String(http.StatusOK, "info")
 		})
-		recruitRouter.GET(publicRouterUrl.RecruitInfo, recruitController.Info)
+		recruitRouter.GET(publicRouterUrl.RecruitInfo, recruitController.BaseInfo)
 		recruitRouter.GET(publicRouterUrl.RecruitLogout, recruitController.Logout)
 		recruitRouter.POST(publicRouterUrl.RecruitUpdateLogin, recruitController.UpdateLogin)
 		recruitRouter.GET(publicRouterUrl.RecruitLookOwnInfo, recruitController.RecruitLookOwnInfo)
-		//recruitRouter.POST(publicRouterUrl.RecruitEntireOwnInfo, recruitController.RecruitEntireOwnInfo)
 		recruitRouter.POST(publicRouterUrl.RecruitUpdateOwnInfo, recruitController.RecruitUpdateOwnInfo)
-		//recruitRouter.POST(publicRouterUrl.RecruitLookNotify, recruitCotroller.RecruitLookNotify)
-		recruitRouter.GET(publicRouterUrl.RecruitLookStudentContact, recruitController.LookStudentContact)
+		recruitRouter.GET(publicRouterUrl.RecruitLookStudentContact, recruitController.RecruitLookStudentContact)
 		recruitRouter.POST(publicRouterUrl.RecruitEntireMessage, messageController.AddTutor)
 		recruitRouter.POST(publicRouterUrl.RecruitUpdateMessage, messageController.UpdateTutor)
 		recruitRouter.GET(publicRouterUrl.RecruitDeleteMessage, messageController.DeleteTutor)

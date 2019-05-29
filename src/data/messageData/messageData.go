@@ -28,3 +28,8 @@ type Tutor struct {
 	Salary        string `json:"salary",xorm:"salary"`
 	Describe      string `json:"describe",xorm:"describe"`
 }
+
+type Score struct {
+	Member string
+	Score  int
+}

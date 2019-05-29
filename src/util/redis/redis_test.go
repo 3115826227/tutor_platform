@@ -31,6 +31,9 @@ func TestSJudgeExist(t *testing.T) {
 	fmt.Println(ok)
 }
 
+func TestZRev(t *testing.T) {
+}
+
 func TestSDel(t *testing.T) {
 	SDel("test", "123")
 }

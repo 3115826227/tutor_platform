@@ -19,6 +19,12 @@ func TestUpdateMessageInfo(t *testing.T) {
 }
 
 func TestQueryAppointmentMessageList(t *testing.T) {
-	data := QueryAppointmentMessageList("88034197", 1, 20)
-	fmt.Println(data)
+}
+
+func TestQueryTop10Tutor(t *testing.T) {
+	QueryTop10Tutor("上海市")
+}
+
+func TestQuerySalary(t *testing.T) {
+	QuerySalary("上海市")
 }

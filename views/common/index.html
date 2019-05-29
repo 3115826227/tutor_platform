@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>响应式导航条</title>
+    <title>宝宝煎米果</title>
     <script type="text/javascript" src="../../static/js/jquery.min.js"></script>
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <!-- 可选的Bootstrap主题文件（一般不用引入） -->
@@ -28,12 +28,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="#" class="navbar-brand">宝宝煎米果</a>
+                    <a href="/" class="navbar-brand">宝宝煎米果</a>
                 </div>
                 <div id="menu" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li><a href="/">家教</a></li>
-                        <li><a href="#">平台规则声明</a></li>
                         <!--下拉菜单功能的实现-->
                     </ul>
                     <div v-if="blag==false">
@@ -128,7 +127,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label" for="phone">电话</label>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <input class="form-control" type="text" v-model="phone"
                                                placeholder="6-15位字母或数字">
                                     </div>
@@ -177,7 +176,7 @@
                     </button>
                 </div>
                 <div class="modal-title">
-                    <h3 class="text-center">学生用户登录</h3>
+                    <h3 class="text-center" style="">学生用户登录</h3>
                 </div>
                 <br>
                 <div class="modal-body">
@@ -350,8 +349,9 @@
                 <br><br>
                 <ul>
                     <li v-for="data in TopData">
-                        <a v-on:click="tutor(data.m_id)">${data.local} ${data.student_level} ${data.salary}</a>
-                        <br><br>
+                        <div id="" style="padding-bottom: 20px"><a v-on:click="tutor(data.m_id)">${data.local}
+                            ${data.student_level}
+                            ${data.salary}</a></div>
                     </li>
                 </ul>
             </div>
@@ -370,8 +370,8 @@
                 <br><br>
                 <ul>
                     <li v-for="data in SalaryData">
-                        <div id="salary"><a></a></div>
-                        <br><br>
+                        <div id="week"><a v-on:click="tutor(data.m_id)">${data.local} ${data.student_level}
+                            ${data.salary}</a></div>
                     </li>
                 </ul>
             </div>
@@ -449,11 +449,12 @@
             account_id: "",
             user_id: "",
             page: 1,
-            page_size: 7
+            page_size: 10
         },
         mounted: function () {
             this.topTutor();
             this.WeekTutor();
+            this.salaryTutor();
             this.pageTutor(1);
             this.getInfo();
         },
@@ -480,12 +481,24 @@
             WeekTutor: function () {
                 var that = this;
                 $.ajax({
-                    url: "/query_week_tutor",
+                    url: "/query_three_day_tutor",
                     type: "get",
                     error: function (e) {
                     },
                     success: function (data) {
                         that.WeekData = data.data.list;
+                    }
+                })
+            },
+            salaryTutor: function () {
+                var that = this;
+                $.ajax({
+                    url: "/query_salary_tutor",
+                    type: "get",
+                    error: function (e) {
+                    },
+                    success: function (data) {
+                        that.SalaryData = data.data.list;
                     }
                 })
             },
@@ -498,7 +511,7 @@
                     data: {
                         city: encodeURI("上海市"),
                         page: this.page,
-                        page_size: this.page_size,
+                        page_size: this.page_size
                     },
                     error: function (e) {
                     },
@@ -518,7 +531,6 @@
                             onPageClicked: function (event, originalEvent, type, page) {
                                 that.page = page;
                                 that.pageTutor();
-                                console.log(data);
                             }
                         });
                     }
@@ -535,12 +547,15 @@
                     data: login,
                     error: function (e) {
                         console.log(e);
-                        alert("No");
+                        alert("密码错误");
                     },
                     success: function (data) {
+                        console.log(data);
                         if (data.code == 200) {
                             localStorage.setItem("studentToken", data.token);
                             window.location.href = "/"
+                        } else {
+                            alert("密码错误");
                         }
                     }
                 })
@@ -582,6 +597,7 @@
                     that.getInfoUrl = infoUrl + "/info";
                     that.getPersonUrl = infoUrl + "/personal";
                     that.getLogoutUrl = infoUrl + "/logout";
+                    console.log(that.getPersonUrl);
                     $.ajax({
                         url: that.getInfoUrl,
                         type: "get",
@@ -597,6 +613,8 @@
                                 that.name = data.data.name;
                                 that.account_id = data.data.account_id;
                                 that.user_id = data.data.user_id;
+                                console.log(that.account_id);
+                                console.log(that.user_id);
                             }
                         }
                     });

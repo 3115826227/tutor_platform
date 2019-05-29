@@ -14,5 +14,5 @@ const (
 
 	RecruitLoginHTML    = "recruitLogin.html"
 	RecruitRegisterHTML = "recruitRegister.html"
-	RecruitPersonalHTML = "recruitPersonal.html"
+	RecruitPersonalHTML = "person.html"
 )

@@ -3,9 +3,9 @@ package messageDao
 import (
 	"fmt"
 	"github.com/go-xorm/xorm"
+	"time"
 	. "tutor_platform/src/dao"
 	"tutor_platform/src/data/messageData"
-	"time"
 )
 
 func GetMessage() {

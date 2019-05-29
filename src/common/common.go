@@ -7,13 +7,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"tutor_platform/src/config"
-	"tutor_platform/src/config/code"
-	"tutor_platform/src/response"
 	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
+	"tutor_platform/src/config"
+	"tutor_platform/src/config/code"
+	"tutor_platform/src/response"
 )
 
 func SetToken(TokenString string) string {
@@ -40,7 +40,7 @@ func TimeFormat(str string) time.Time {
 }
 
 func TimeToStr(t time.Time) string {
-	return t.String()
+	return t.Format(config.TimeLayout)
 }
 
 func UnixToStr(timeInt int64) string {

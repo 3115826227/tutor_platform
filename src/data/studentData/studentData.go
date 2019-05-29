@@ -18,7 +18,7 @@ type Student struct {
 	EducationLevel       string    `json:"education_level",xorm:"education_level"`
 	JobStatus            string    `json:"job_status",xorm:"job_status"`
 	JobCategory          string    `json:"job_category",xorm:"job_category"`
-	JobDesirableSalary   string    `json:"job_desirable_salary",xorm:"job_desirable_salary"`
+	JobDesirableSalary   int64     `json:"job_desirable_salary",xorm:"job_desirable_salary"`
 	AdvantagesSubject    string    `json:"advantage_subject",xorm:"advantages_subject"`
 	AppointmentTutorList string    `json:"appointment_tutor_list",xorm:"appointment_tutor_list"`
 	CreateTime           time.Time `json:"create_time",xorm:"created_time"`

@@ -2,43 +2,504 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>个人中心</title>
+    <link rel="stylesheet" href="../../static/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <!-- 可选的Bootstrap主题文件（一般不用引入） -->
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <link rel="stylesheet" href="../../static/css/base.css">
-    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
-    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
     <script src="../../static/js/jquery.min.js"></script>
-    <script src="../../static/js/city.js"></script>
+    <script src="../../static/layui/layui.js"></script>
+    <!--<script src="../../static/layui/lay/modules/layer.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <link rel="stylesheet" href="../../static/css/person.css">
 </head>
 <body>
 <div id="app">
-    <div class="header">
-        <nav class="nav navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <!--在移动端的时候导航条折叠起来，三横的样式出现，点击该样式可以显示或隐藏导航条上的内容-->
-                    <button class="navbar-toggle" data-toggle="collapse" data-target="#menu">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a href="#" class="navbar-brand">宝宝煎米果</a>
+    <div class="header-nav">
+        <div id="nav">
+            <ul class="layui-nav">
+                <li class="layui-nav-item">
+                    <a v-on:click="return_index"><span><i class="layui-icon layui-icon-return"
+                                                          style="padding-right: 5px;"></i>返回</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="content">
+        <div id="left-nav">
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item"><a v-on:click="switch_nav('base_info')">基本信息</a></li>
+                <li class="layui-nav-item"><a v-on:click="switch_nav('update_password')">修改密码</a></li>
+                <li class="layui-nav-item"><a v-on:click="switch_nav('tutor_info')">已预约家教信息</a></li>
+            </ul>
+        </div>
+        <div id="person-content" style="width: 900px;">
+            <div id="detail" v-if="nav_status == 'detail_info'">
+                <div>
+                    <label class="label-theme">详细信息</label>
                 </div>
-                <div id="menu" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a href="/">家教</a></li>
-                        <li><a href="#">平台规则声明</a></li>
-                        <!--下拉菜单功能的实现-->
-                    </ul>
+                <div class="detail_info">
+                    <div class="form-horizontal" align="center">
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">用户编号：</label>
+                            <a class="col-sm-3 label-control" style="color: black;font-weight: normal;">${student_base.id}</a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </nav>
+            <div id="update" v-else-if="nav_status == 'update_password'">
+                <div>
+                    <label class="label-theme">修改密码</label>
+                </div>
+                <div class="update_password">
+                    <div class="form-horizontal" align="center">
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">原密码：</label>
+                            <div class="col-sm-3">
+                                <input class="form-control" type="password" v-model="old_password"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">新密码：</label>
+                            <div class="col-sm-3">
+                                <input class="form-control" type="password" v-model="new_password"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">重复输入新密码：</label>
+                            <div class="col-sm-3">
+                                <input class="form-control" type="password" v-model="new_repassword"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group" v-if="update_password_err">
+                            <label class="col-sm-3 label-control"></label>
+                            <label class="col-sm-3 label-control" style="color: red;">${update_password_err}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control"></label>
+                            <label class="col-sm-3 label-control">
+                                <button class="layui-btn layui-btn-normal" v-on:click="update_password">点击修改
+                                </button>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="tutor" v-else-if="nav_status == 'tutor_info'">
+                <div>
+                    <label class="label-theme">已预定家教信息</label>
+                </div>
+                <div class="tutor_info">
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="100px;">
+                            <col width="200px">
+                            <col width="120px">
+                            <col width="120px">
+                            <col width="100px">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>家教编号</th>
+                            <th>家教地点</th>
+                            <th>家教薪资</th>
+                            <th>发布时间</th>
+                            <th>详情</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="data in tutor_list">
+                            <th>${data.m_id}</th>
+                            <th>${data.local}</th>
+                            <th>${data.salary}</th>
+                            <th>${data.create_time}</th>
+                            <th>
+                                <button class="layui-btn-sm layui-btn-radius layui-btn" v-on:click="look(data.m_id)"><h5
+                                        style="font-size: 13px;font-weight: normal">查看</h5></button>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="info" hidden="hidden">
+                    <div class="form-horizontal" align="left" style="padding: 0;">
+                        <div class="form-group">
+                            <label class="col-sm-5">家教编号：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_id}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">家教发布者：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_user_name}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">学生性别：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_student_gender}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">学生年级科目：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_student_level}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">家教薪资：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_salary}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">具体要求和描述：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_describe}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">浏览量：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_views}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">预约量：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_appointment_number}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">创建时间：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_create_time}</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5">发布者联系电话：</label>
+                            <label class="col-sm-4" style="text-align: left">${tutor_user_phone}</label>
+                        </div>
+                        <!--<div class="form-group">-->
+                        <!--<label class="col-sm-5"></label>-->
+                        <!--<div class="col-sm-5" style="text-align: right">-->
+                        <!--<button class="layui-btn layui-btn-normal">确定</button>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </div>
+            <div id="base" v-else="">
+                <div>
+                    <label class="label-theme">基本信息</label>
+                </div>
+                <div class="base_info">
+                    <div class="form-horizontal" align="center">
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">用户编号：</label>
+                            <a class="col-sm-3 label-control" style="color: black;font-weight: normal;">${student_base.user_id}</a>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">所在城市：</label>
+                            <a class="col-sm-3 label-control" style="color: black;font-weight: normal;">${student_base.location.province
+                                + '省' +
+                                student_base.location.city + '市'}</a>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">用户名：</label>
+                            <div v-if="button_status == 'info'">
+                                <a class="col-sm-3 label-control">${student_base.user_name}</a>
+                            </div>
+                            <div v-else="" class="col-sm-3">
+                                <input class="form-control" type="text" v-model="username"
+                                       :placeholder="student_base.user_name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">用户姓名：</label>
+                            <div v-if="button_status == 'info'">
+                                <a class="col-sm-3 label-control">${student_base.name}</a>
+                            </div>
+                            <div v-else="" class="col-sm-3">
+                                <input class="form-control" type="text" v-model="name"
+                                       :placeholder="student_base.name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control" style="padding-bottom: 2px">用户性别：</label>
+                            <div v-if="button_status == 'info'">
+                                <a class="col-sm-3 label-control">${student_base.gender}</a>
+                            </div>
+                            <div v-else="" class="col-sm-3" style="text-align: left">
+                                <input type="radio" v-model="gender" value="男"><label
+                                    style="margin: 0 20px 0 12px;font-size: 17px;">男</label>
+                                <input type="radio" v-model="gender" value="女"><label
+                                    style="margin: 0 0 0 12px; font-size: 17px;">女</label>
+                            </div>
+                        </div>
+                        <div class=" form-group">
+                            <label class="col-sm-3 label-control">用户号码：</label>
+                            <div v-if="button_status == 'info'">
+                                <a class="col-sm-3 label-control">${student_base.phone}</a>
+                            </div>
+                            <div v-else="" class="col-sm-3">
+                                <input class="form-control" type="text" v-model="phone"
+                                       :placeholder="student_base.phone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control">用户身份：</label>
+                            <a class="col-sm-3 label-control" v-if="student_base.identify == 'recruit'"
+                               style="color: black;font-weight: normal;">招聘用户</a>
+                            <a class="col-sm-3 label-control" v-else=""
+                               style="color: black;font-weight: normal;">学生用户</a>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 label-control"></label>
+                            <label class="col-sm-3 label-control" v-if="button_status == 'info'">
+                                <button class="layui-btn layui-btn-normal" v-on:click="switch_button('update')">点击修改
+                                </button>
+                            </label>
+                            <label class="col-sm-3 label-control" v-else>
+                                <button class="layui-btn layui-btn" v-on:click="switch_button('info')">确定修改
+                                </button>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+    <script>
+        var vm = new Vue({
+            el: "#app",
+            delimiters: ['${', '}'],
+            data: {
+                nav_status: "base_info",
+                button_status: "info",
+                student_base: {},
+                tutor_list: [],
+                notice_list: [{
+                    tutor_id: "A374434",
+                    appointment_status: true,
+                    time: "2019-04-30 15:16:35"
+                }, {
+                    tutor_id: "A04353",
+                    appointment_status: false,
+                    time: "2019-05-12 19:42:32"
+                }],
+                username: "",
+                name: "",
+                gender: "",
+                phone: "",
+                mail: "",
+                old_password: "",
+                new_password: "",
+                new_repassword: "",
+                picture_code: "",
+                update_password_err: "",
+                tutor_id: "",
+                tutor_student_gender: "",
+                tutor_student_level: "",
+                tutor_salary: "",
+                tutor_describe: "",
+                tutor_views: "",
+                tutor_appointment_number: "",
+                tutor_create_time: "",
+                tutor_user_name: "",
+                tutor_user_phone: "",
+                student_level: "",
+                student_gender: "",
+                city: "",
+                local: "",
+                salary: "",
+                describe: "",
+                subject: ""
+            },
+            mounted: function () {
+                this.getInfo();
+                this.look_appointment_list();
+            },
+            methods: {
+                return_index: function () {
+                    window.location.href = "/"
+                },
+                switch_nav: function (status) {
+                    console.log(status);
+                    this.nav_status = status;
+                },
+                switch_button: function (status) {
+                    console.log(status);
+                    this.button_status = status;
+                },
+                getInfo: function () {
+                    var that = this;
+                    var studentToken = localStorage.getItem("studentToken");
+                    var recruitToken = localStorage.getItem("recruitToken");
+                    console.log(studentToken);
+                    console.log(recruitToken);
+                    if (studentToken != null || recruitToken != null) {
+                        var infoUrl = studentToken != null ? "/student" : "/recruit";
+                        var token = studentToken != null ? studentToken : recruitToken;
+                        that.tokenName = studentToken != null ? "studentToken" : "recruitToken";
+                        that.getInfoUrl = infoUrl + "/info";
+                        that.getPersonUrl = infoUrl + "/personal";
+                        that.getLogoutUrl = infoUrl + "/logout";
+                        $.ajax({
+                            url: that.getInfoUrl,
+                            type: "get",
+                            dataType: "json",
+                            headers: {'token': 'Bearer ' + token},
+                            error: function (e) {
+                                console.log(e);
+                                window.location.href = "/"
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                if (data.code == 200) {
+                                    var name = data.data.name;
+                                    var userId = data.data.user_id;
+                                    var accountId = data.data.account_id;
+                                    that.blag = true;
+                                    that.name = name;
+                                    that.province = data.data.location.province + "省";
+                                    that.city = data.data.location.city + "市";
+                                    that.look_own_info();
+                                } else {
+                                    window.location.href = "/"
+                                }
+                            }
+                        });
+                    }
+                },
+                look_own_info: function () {
+                    var that = this;
+                    var token = localStorage.getItem(this.tokenName);
+                    $.ajax({
+                        url: "/student/look_own_info",
+                        type: "get",
+                        dataType: "json",
+                        headers: {'token': 'Bearer ' + token},
+                        error: function (e) {
+                            console.log(e);
+                            window.location.href = "/"
+                        },
+                        success: function (data) {
+                            if (data.code == 200) {
+                                that.student_base = data.data;
+                                that.phone = that.student_base.phone;
+                                console.log(that.student_base);
+                            } else {
+                                window.location.href = "/"
+                            }
+                        }
+                    });
+                },
+                update_password: function () {
+                    var that = this;
+                    var token = localStorage.getItem(this.tokenName);
+                    var data = {
+                        password: this.old_password,
+                        new_password: this.new_password
+                    };
+                    console.log(data);
+                    if (this.new_password != this.new_repassword) {
+                        that.update_password_err = "新密码前后两次输入不一致，请重新输入";
+                    }
+                    $.ajax({
+                        url: "/student/update_login",
+                        type: "post",
+                        data: data,
+                        dataType: "json",
+                        headers: {'token': 'Bearer ' + token},
+                        error: function (err) {
+                            window.location.href = "/"
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            if (data.code == 200) {
+                                that.update_password_err = "密码修改成功";
+                            } else {
+                                that.update_password_err = data.message;
+                            }
+                            console.log(that.update_password_err);
+                        }
+                    })
+                },
+                picture_code_check: function () {
+                    var data = {
+                        code: this.picture_code
+                    };
+                },
+                look_appointment_list: function () {
+                    var that = this;
+                    var token = localStorage.getItem(this.tokenName);
+                    $.ajax({
+                        url: "/student/look_own_appointment_message_list",
+                        type: "get",
+                        dataType: "json",
+                        headers: {'token': 'Bearer ' + token},
+                        error: function (err) {
+
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            that.tutor_list = data.data;
+                        }
+                    })
+                },
+                look: function (id) {
+                    var that = this;
+                    var token = localStorage.getItem(this.tokenName);
+                    for (var i = 0; i < this.tutor_list.length; i++) {
+                        if (this.tutor_list[i].m_id == id) {
+                            that.tutor_id = id;
+                            that.tutor_student_gender = this.tutor_list[i].student_gender;
+                            that.tutor_student_level = this.tutor_list[i].student_level;
+                            that.tutor_salary = this.tutor_list[i].salary;
+                            that.tutor_describe = this.tutor_list[i].describe;
+                            that.tutor_views = this.tutor_list[i].views;
+                            that.tutor_appointment_number = this.tutor_list[i].appointment_number;
+                            that.tutor_create_time = this.tutor_list[i].create_time;
+                            $.ajax({
+                                url: "/student/look_recruit_contact",
+                                type: "get",
+                                data: {
+                                    recruit_id: this.tutor_list[i].own_account_id
+                                },
+                                dataType: "json",
+                                headers: {'token': 'Bearer ' + token},
+                                error: function (err) {
+
+                                },
+                                success: function (data) {
+                                    console.log(data);
+                                    that.tutor_user_name = data.data.username;
+                                    that.tutor_user_phone = data.data.phone;
+                                }
+                            })
+                        }
+                    }
+                    layer.open({
+                        type: 1,
+                        title: '家教信息查看',
+                        area: ['600px', '600px'],
+                        fix: false,
+                        content: $('#info'),
+                        end: function () {
+                            dataTable.reloadTable();
+                        },
+                        btn: ['确定'],
+                    });
+                }
+            }
+        });
+        layui.use('laypage', function () {
+            var laypage = layui.laypage;
+            laypage.render({
+                elem: "pageTurning",
+                count: 50,
+                limit: 10,
+                curr: 1,
+                theme: '#4e66f1',
+            });
+        });
+        layui.use('element', function () {
+            var element = layui.element;
+        });
+
+        layui.use('form', function () {
+            var form = layui.form;
+        });
+
+    </script>
 </body>
 </html>

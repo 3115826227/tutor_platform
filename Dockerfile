@@ -14,6 +14,6 @@ COPY views /go/src/tutor_platform/views
 COPY --from=0 /go/src/tutor_platform/tutor_platform .
 COPY --from=0 /go/src/tutor_platform/localtime /etc/localtime
 
-EXPOSE 8005
+EXPOSE 8080
 
 CMD exec ./tutor_platform >>/var/log/tutor_platform/web.log 2>>/var/log/tutor_platform/web.log

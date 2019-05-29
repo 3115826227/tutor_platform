@@ -2,8 +2,8 @@ package sql
 
 import (
 	"fmt"
-	"tutor_platform/src/common"
 	"time"
+	"tutor_platform/src/common"
 )
 
 const (
@@ -32,7 +32,7 @@ func QueryBatchIDSQL(idList []string, idName string) string {
 }
 
 func QueryWeekSQL() string {
-	WeekTime := time.Now().AddDate(0, 0, -7).Unix()
+	WeekTime := time.Now().AddDate(0, 0, -60).Unix()
 
 	//WeekAgo := common.TimeToStr(WeekTime)
 	//fmt.Println(WeekAgo)

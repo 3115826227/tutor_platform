@@ -2,8 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"tutor_platform/src/config"
 	"net/http"
+	"tutor_platform/src/config"
 )
 
 func Index(c *gin.Context) {

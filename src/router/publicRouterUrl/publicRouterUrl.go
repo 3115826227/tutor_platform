@@ -63,13 +63,15 @@ const (
 	//查看发布信息
 	LookMessage = "/look_message"
 	//查看单个信息
-	QueryTutor = "/query_tutor"
+	LookTutor = "/look_tutor"
 	//进入当个信息页面
 	TutorPage = "/tutor_page"
 	//查看近七天内信息
-	QueryWeekTutor = "/query_week_tutor"
+	QueryThreeDayTutor = "/query_three_day_tutor"
 	//查看本市内浏览量最大的十条信息
 	QueryTop10Tutor = "/query_top_tutor"
+	//按薪资查看信息
+	QuerySalaryTutor = "/query_salary_tutor"
 	//按时间翻页查看信息
 	QueryPageTutor = "/query_page_tutor"
 

@@ -53,7 +53,7 @@ func init() {
 	}
 	MySQLUrl = os.Getenv("MYSQL_URL")
 	if MySQLUrl == "" {
-		MySQLUrl = "root:1234@tcp(localhost:3307)/Graduation?charset=utf8"
+		MySQLUrl = "root:1234@tcp(119.23.49.85:3306)/Graduation?charset=utf8"
 	}
 
 	redisUrl := os.Getenv("REDIS_URL")

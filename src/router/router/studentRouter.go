@@ -3,6 +3,8 @@ package router
 import (
 	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 	"tutor_platform/src/common"
 	"tutor_platform/src/config"
 	"tutor_platform/src/controller/messageController"
@@ -11,8 +13,6 @@ import (
 	"tutor_platform/src/data/commonData"
 	"tutor_platform/src/router/publicRouterUrl"
 	"tutor_platform/src/util/redis"
-	"net/http"
-	"time"
 )
 
 type login struct {
@@ -95,17 +95,16 @@ func StudentRouter(router *gin.Engine) {
 		studentRouter.GET(publicRouterUrl.StudentAuthorized, func(c *gin.Context) {
 			c.String(http.StatusOK, "info")
 		})
-		studentRouter.GET(publicRouterUrl.StudentInfo, studentController.Info)
+		studentRouter.GET(publicRouterUrl.StudentInfo, studentController.BaseInfo)
 		studentRouter.GET(publicRouterUrl.StudentLogout, studentController.Logout)
 		studentRouter.POST(publicRouterUrl.StudentUpdateLogin, studentController.UpdateLogin)
-		studentRouter.POST(publicRouterUrl.StudentEntireOwnInfo, studentController.StudentEntireOwnInfo)
+		studentRouter.GET(publicRouterUrl.StudentLookOwnInfo, studentController.StudentLookOwnInfo)
+		studentRouter.POST(publicRouterUrl.StudentUpdateOwnInfo, studentController.StudentUpdateOwnInfo)
 		studentRouter.GET(publicRouterUrl.AppointmentTutor, messageController.AppointmentTutor)
 		studentRouter.GET(publicRouterUrl.JudgeAppointment, messageController.JudgeAppointment)
-		studentRouter.GET(publicRouterUrl.StudentLookOwnAppointmentMessageList, studentController.AppointmentTutorList)
-		//studentRouter.POST(publicRouterUrl.StudentUpdateOwnInfo, studentController.StudentUpdateOwnInfo)
-		//studentRouter.GET(publicRouterUrl.StudentLookOwnInfo, studentController.StudentLookOwnInfo)
+		studentRouter.GET(publicRouterUrl.StudentLookOwnAppointmentMessageList, studentController.StudentLookAppointmentTutorList)
 		//studentRouter.POST(publicRouterUrl.StudentLookNotify, studentController.StudentLookNotify)
-		//studentRouter.POST(publicRouterUrl.StudentLookRecruitContact, studentController.StudentLookRecruitContact)
+		studentRouter.GET(publicRouterUrl.StudentLookRecruitContact, messageController.LookRecruitInfo)
 		//studentRouter.POST(publicRouterUrl.StudentLookMessageAppointmentNumber, studentController.StudentLookMessageAppointmentNumber)
 		//studentRouter.POST(publicRouterUrl.StudentAppointmentMessage, studentController.StudentAppointmentMessage)
 		//studentRouter.POST(publicRouterUrl.StudentDeleteAppointment, studentController.StudentDeleteAppointment)

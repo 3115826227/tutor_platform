@@ -39,9 +39,9 @@
             </div>
         </nav>
     </div>
-    <div id="recruitPage">
-        <div class="person_left">
-            <div id="recruitList">
+    <div id="page-recruit">
+        <div class="person-left">
+            <div id="list-recruit">
                 <div class="row col-xs-2">
                     <div class="span2">
                         <ul class="nav nav-pills nav-stacked">
@@ -55,7 +55,7 @@
                 </div>
             </div>
         </div>
-        <div class="person_right">
+        <div class="person-right">
             <div v-if="control == 2">
                 <div id="repassword" class="form-horizontal" align="center">
                     <div class="form-group">
@@ -101,10 +101,8 @@
                     <div class="form-horizontal" align="center">
                         <div class="form-group">
                             <label class="col-sm-4 control-label" for="city">家教城市:</label>
-                            <div class="col-sm-3">
-                                <input class="form-control" type="text" v-model="city"
-                                       placeholder="">
-                            </div>
+                            <label class="col-sm-2 control-label" style="text-align: left;">${province + city}</label>
+
                         </div>
                         <div class="form-group">
                             <label class="col-sm-4 control-label" for="local">家教位置:</label>
@@ -114,11 +112,14 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-4 control-label" for="gender">学生性别:</label>
-                            <div class="col-sm-3">
-                                <input class="form-control" type="text" v-model="gender"
-                                       placeholder="">
+                            <label class="col-sm-4 control-label" for="gender">性别：</label>
+                        {{/*<div class="col-sm-6">*/}}
+                            <div class="col-sm-4 control-label" id="gender" style="text-align: left">
+                                <input type="radio" v-model="gender" value="男">&nbsp;&nbsp;<label>男</label>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <input type="radio" v-model="gender" value="女">&nbsp;&nbsp;<label>女</label>
                             </div>
+                        {{/*</div>*/}}
                         </div>
                         <div class="form-group">
                             <label class="col-sm-4 control-label" for="level">学生年级:</label>
@@ -129,22 +130,38 @@
                         </div>
                         <div class="form-group">
                             <label class="col-sm-4 control-label" for="subject">学生科目:</label>
-                            <div class="col-sm-3">
-                                <input class="form-control" type="text" v-model="subject"
-                                       placeholder="">
+                            <div class="col-sm-5 control-label" style="text-align: left;">
+                                <input type="radio" v-model="subject" value="语文">&nbsp;&nbsp;<label>语文</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <input type="radio" v-model="subject" value="数学">&nbsp;&nbsp;<label>数学</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <input type="radio" v-model="subject" value="英语">&nbsp;&nbsp;<label>英语</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <input type="radio" v-model="subject" value="物理">&nbsp;&nbsp;<label>物理</label>
+                                <br>
+                                <input type="radio" v-model="subject" value="化学">&nbsp;&nbsp;<label>化学</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <input type="radio" v-model="subject" value="生物">&nbsp;&nbsp;<label>生物</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <input type="radio" v-model="subject" value="历史">&nbsp;&nbsp;<label>历史</label>
+                                &nbsp;&nbsp;&nbsp;
+                                <input type="radio" v-model="subject" value="地理">&nbsp;&nbsp;<label>地理</label>
+                                <br>
+                                <input type="radio" v-model="subject" value="政治">&nbsp;&nbsp;<label>政治</label>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-4 control-label" for="salary">家教薪资:</label>
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <input class="form-control" type="text" v-model="salary"
-                                       placeholder="">
+                                       placeholder=""/>
                             </div>
+                            <label class="col-sm-2 control-label" style="text-align: left;">元/小时</label>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-4 control-label" for="describe">具体描述和要求:</label>
                             <div class="col-sm-6">
-                            <textarea class="form-control" rows="3" v-model="describe"
+                            <textarea class="form-control" rows="6" v-model="describe"
                                       placeholder=""></textarea>
                             </div>
                         </div>
@@ -172,30 +189,26 @@
             </div>
             <div v-else="">
                 <div id="recruitInfo">
-                    <div class="form-horizontal">
+                    <div v-if="update_status==1" class="form-horizontal" id="read">
                         <div class="form-group">
                             <strong class="col-xs-2">用户编号:</strong>
                             <p>${recruitData.user_id}</p>
                         </div>
                         <div class="form-group">
                             <strong class="col-xs-2">用户名:</strong>
-                            <a v-if="update_status == 1">${recruitData.username}</a>
+                            <a>${recruitData.username}</a>
                         </div>
                         <div class="form-group">
                             <strong class="col-xs-2">昵称:</strong>
-                            <a v-if="update_status == 1">${recruitData.name}</a>
-                            <div v-else="update_status == 2" class="col-sm-4">
-                                <input class="form-control" type="password" v-model="password"
-                                       placeholder="至少6位字母或数字">
-                            </div>
+                            <a>${recruitData.name}</a>
                         </div>
                         <div class="form-group">
                             <strong class="col-xs-2">性别:</strong>
-                            <a v-if="update_status == 1">${recruitData.gender}</a>
+                            <a>${recruitData.gender}</a>
                         </div>
                         <div class="form-group">
                             <strong class="col-xs-2">电话:</strong>
-                            <a v-if="update_status == 1">${recruitData.phone}</a>
+                            <a>${recruitData.phone}</a>
                         </div>
                         <div class="form-group">
                             <strong class="col-xs-2">身份:</strong>
@@ -203,17 +216,56 @@
                         </div>
                         <div class="form-group">
                             <strong class="col-xs-2">城市:</strong>
-                            <a v-if="update_status == 1">${recruitData.location.province + " " +
-                                recruitData.location.city + " " + recruitData.location.district}</a>
+                            <p>${recruitData.location.province + " " +
+                                recruitData.location.city + " " + recruitData.location.district}</p>
                         </div>
                         <div class="form-group">
                             <strong class="col-xs-2"></strong>
-                            <button type="button" class="btn btn-success" v-on:click="updateStatus()"
-                                    v-if="update_status == 1">修改信息
-                            </button>
-                            <button type="button" class="btn btn-success" v-on:click="updateRecruit()"
-                                    v-if="update_status == 2">更新信息
-                            </button>
+                            <button type="button" class="btn btn-success" v-on:click="updateStatus()">修改信息</button>
+                        </div>
+                    </div>
+                    <div v-else="update_status==2" class="form-horizontal" id="write">
+                        <div class="form-group" style="padding-top: 10px;">
+                            <strong class="col-xs-2 control-label" id="code" style="padding-top: 10px;">用户编号:</strong>
+                            <p style="padding-top: 10px;">${recruitData.user_id}</p>
+                        </div>
+                        <div class="form-group">
+                            <strong class="col-xs-2 control-label" id="userName"
+                                    style="padding-top: 10px;">用户名:</strong>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="password" v-model="password"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <strong class="col-xs-2 control-label" style="padding-top: 10px;">昵称:</strong>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="password" v-model="password"
+                                       placeholder="至少6位字母或数字">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <strong class="col-xs-2 control-label" style="padding-top: 10px;">性别:</strong>
+                        </div>
+                        <div class="form-group">
+                            <strong class="col-xs-2 control-label" style="padding-top: 10px;">电话:</strong>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="password" v-model="password"
+                                       placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <strong class="col-xs-2 control-label" style="padding-top: 10px;">身份:</strong>
+                            <p>${recruitData.identify}</p>
+                        </div>
+                        <div class="form-group">
+                            <strong class="col-xs-2 control-label" style="padding-top: 10px;">城市:</strong>
+                            <p>${recruitData.location.province + " " +
+                                recruitData.location.city + " " + recruitData.location.district}</p>
+                        </div>
+                        <div class="form-group">
+                            <strong class="col-xs-2"></strong>
+                            <button type="button" class="btn btn-success" v-on:click="updateRecruit()">更新信息</button>
                         </div>
                     </div>
                 </div>
@@ -255,6 +307,7 @@
             mounted: function () {
                 this.getInfo();
                 this.recruitInfo();
+                this.getTutorList();
             },
             methods: {
                 getInfo: function () {
@@ -291,12 +344,37 @@
                                     console.log(accountId);
                                     that.blag = true;
                                     that.name = name;
+                                    that.province = data.data.location.province + "省";
+                                    that.city = data.data.location.city + "市";
                                 } else {
                                     window.location.href = "/"
                                 }
                             }
                         });
                     }
+                },
+                getTutorList: function () {
+                    var that = this;
+                    var token = localStorage.getItem(this.tokenName);
+                    $.ajax({
+                        url: "/recruit/look_message_list",
+                        type: "get",
+                        dataType: "json",
+                        headers: {'token': 'Bearer ' + token},
+                        error: function (e) {
+                            console.log(e);
+                            window.location.href = "/"
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            if (data.code == 200) {
+                                that.recruitData = data.data;
+                                console.log(that.recruitData);
+                            } else {
+                                window.location.href = "/"
+                            }
+                        }
+                    })
                 },
                 updatePassword: function () {
                     var that = this;
@@ -311,7 +389,7 @@
                     var that = this;
                     var token = localStorage.getItem(this.tokenName);
                     $.ajax({
-                        url: "/recruit/look_own_info",
+                        url: "/student/look_own_info",
                         type: "get",
                         dataType: "json",
                         headers: {'token': 'Bearer ' + token},

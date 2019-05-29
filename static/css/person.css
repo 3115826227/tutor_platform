@@ -1,0 +1,115 @@
+body {
+    background-color: #dcdcdd;
+}
+
+.content {
+    height: auto;
+    width: 1500px;
+    margin: auto;
+    padding: 0 120px;
+}
+
+#left-nav {
+    float: left;
+    width: 200px;
+    padding: 50px 0 0 0;
+}
+
+#person-content {
+    margin: 40px 0 30px 60px;
+    border-radius: 4px;
+    padding: 30px;
+    background-color: white;
+    width: 980px;
+    height: 900px;
+    float: left;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.label-theme {
+    font-family: inherit;
+    font-size: 24px;
+    line-height: 1.1;
+    color: inherit;
+    display: block;
+    font-weight: normal;
+}
+
+.base_info {
+    font-size: 19px;
+    padding: 20px 0 0 30px;
+}
+
+.base_info div a {
+    text-align: left;
+    color: #666;
+    text-decoration: none;
+    font-weight: normal;
+    margin-bottom: 7px;
+}
+
+.base_info div label {
+    font-weight: normal;
+}
+
+.form-group {
+    padding: 15px;
+    text-align: right;
+}
+
+.update_password {
+    padding-top: 20px;
+}
+
+.update_password div div label {
+    font-size: 19px;
+    font-weight: normal;
+}
+
+.tutor_info {
+    padding: 20px 0 0 30px;
+}
+
+#info {
+    padding: 5px 0 0 20px;
+    font-size: 18px;
+}
+
+#info div label {
+    font-weight: normal;
+}
+
+#info .form-group {
+    padding: 0 0 3px 0;
+}
+
+.notice_panel {
+    padding: 20px 0 0 20px;
+    font-size: 17px;
+}
+
+.notice_panel div {
+    padding: 10px 0 0 10px;
+}
+
+.notice_panel div label {
+    color: #666;
+    font-weight: normal;
+}
+
+.notice_time {
+    font-size: 13px;
+    color: #999;
+}
+
+.add_tutor {
+    padding-top: 20px;
+}
+
+.add_tutor div div label {
+    font-size: 19px;
+    font-weight: normal;
+}

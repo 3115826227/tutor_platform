@@ -5,6 +5,7 @@ import (
 	"github.com/go-redis/redis"
 	"go.uber.org/zap"
 	"tutor_platform/src/config"
+	"tutor_platform/src/data/messageData"
 	"tutor_platform/src/util/log"
 )
 
@@ -119,18 +120,22 @@ func ZAddScore(key, member string) error {
 	return messageClient.ZIncrBy(key, 1, member).Err()
 }
 
-func ZRevRange(key string, num int) map[string]int {
-	res, err := messageClient.ZRevRange(key, 0, int64(num-1)).Result()
+func ZRev(key string, num int) string {
+	return messageClient.ZRevRange(key, 0, int64(num-1)).String()
+}
+
+func ZRevRange(key string, num int) []messageData.Score {
+	res, err := messageClient.ZRevRangeWithScores(key, 0, int64(num-1)).Result()
+	fmt.Println(res)
 	if err != nil {
 		return nil
 	}
-	memberScoreMap := make(map[string]int)
-	for _, member := range res {
-		score, err := messageClient.ZScore(key, member).Result()
-		if err != nil {
-			return nil
-		}
-		memberScoreMap[member] = int(score)
+	memberScoreList := make([]messageData.Score, 0)
+	for _, data := range res {
+		memberScoreList = append(memberScoreList, messageData.Score{
+			Member: data.Member.(string),
+			Score:  int(data.Score),
+		})
 	}
-	return memberScoreMap
+	return memberScoreList
 }

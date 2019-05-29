@@ -27,13 +27,12 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="#" class="navbar-brand">宝宝煎米果</a>
+                    <a href="/" class="navbar-brand">宝宝煎米果</a>
                 </div>
                 <div id="menu" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <ul class="nav navbar-nav">
                             <li><a href="/">家教</a></li>
-                            <li><a href="#">平台规则声明</a></li>
                             <!--下拉菜单功能的实现-->
                         </ul>
                     </ul>
@@ -64,7 +63,7 @@
                         </ul>
                     </div>
                     <ul class="nav navbar-nav navbar-right" v-else="blag">
-                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" v-on:click="personal">
                             您好，${name}</a>
                         </li>
                         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" v-on:click="logout">
@@ -316,7 +315,7 @@
                 <strong>创建时间：</strong>${tutorData.create_time}
             </div>
             <div align="center">
-                <button class="btn btn-info">预约</button>
+                <button class="btn btn-info" v-on:click="appointment">预约</button>
             </div>
         </div>
     </div>
@@ -342,7 +341,7 @@
             getPersonUrl: "",
             getLogoutUrl: "",
             blag: false,
-            tutorData: []
+            tutorData: [],
         },
         mounted: function () {
             this.tutorQuery();
@@ -433,9 +432,8 @@
                                 var name = data.data.name;
                                 var userId = data.data.user_id;
                                 var accountId = data.data.account_id;
-                                console.log(name);
-                                console.log(userId);
-                                console.log(accountId);
+                                that.account_id = data.data.account_id;
+                                that.user_id = data.data.user_id;
                                 that.blag = true;
                                 that.name = name;
                             }
@@ -491,7 +489,7 @@
                 var that = this;
                 var id = localStorage.getItem("id");
                 $.ajax({
-                    url: "/query_tutor",
+                    url: "/look_tutor",
                     type: "get",
                     dataType: "json",
                     data: {
@@ -506,6 +504,35 @@
                         console.log(data.data.list[0]);
                     }
                 })
+            },
+            appointment: function () {
+                var that = this;
+                var token = localStorage.getItem(this.tokenName);
+                var id = localStorage.getItem("id");
+                $.ajax({
+                    url: "/student/appointment_tutor",
+                    type: "get",
+                    dataType: "json",
+                    data: {
+                        m_id: id
+                    },
+                    headers: {'token': 'Bearer ' + token},
+                    error: function (e) {
+                        console.log(e);
+                        alert("请先登录");
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.code == 200) {
+                            alert(data.data);
+                        } else {
+                            alert("预约失败");
+                        }
+                    }
+                })
+            },
+            personal: function () {
+                window.location.href = this.getPersonUrl + "?user_id=" + this.user_id + "&account_id=" + this.account_id;
             }
         }
     })

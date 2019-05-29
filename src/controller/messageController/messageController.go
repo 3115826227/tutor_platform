@@ -4,18 +4,21 @@ import (
 	"fmt"
 	"github.com/Unknwon/com"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"strconv"
+	"time"
 	"tutor_platform/src/common"
 	"tutor_platform/src/config"
 	"tutor_platform/src/config/code"
 	"tutor_platform/src/controller/commonController"
 	"tutor_platform/src/dao/commonDao"
 	"tutor_platform/src/dao/messageDao"
+	"tutor_platform/src/dao/studentDao"
+	"tutor_platform/src/data/commonData"
 	"tutor_platform/src/data/messageData"
+	"tutor_platform/src/data/studentData"
 	"tutor_platform/src/response"
 	"tutor_platform/src/util/redis"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 func LookStudentInfo(c *gin.Context) {
@@ -23,9 +26,37 @@ func LookStudentInfo(c *gin.Context) {
 }
 
 func LookRecruitInfo(c *gin.Context) {
-
+	studentId := commonController.GetId(c)
+	student := studentData.Student{
+		UserId: studentId,
+	}
+	ok := studentDao.Query(&student)
+	if ok == false {
+		c.JSON(http.StatusOK, common.FailResponse(code.DBQueryErrorCode))
+	}
+	recruitId := c.Query("recruit_id")
+	recruit := commonData.User{
+		UserId: recruitId,
+	}
+	ok = commonDao.FindUser(&recruit)
+	if ok == false {
+		c.JSON(http.StatusOK, common.FailResponse(code.DBQueryErrorCode))
+	}
+	recruitResponse := response.RecruitInfoResponse{
+		UserId:   recruit.UserId,
+		UserName: recruit.UserName,
+		Name:     recruit.Name,
+		Location: common.GetCity(recruit.City),
+		Identify: recruit.Identify,
+		Phone:    recruit.Phone,
+		Gender:   recruit.Gender,
+	}
+	c.JSON(http.StatusOK, common.SuccessResponse(recruitResponse))
 }
 
+/*
+	添加家教信息逻辑
+*/
 func AddTutor(c *gin.Context) {
 	userId := commonController.GetId(c)
 	studentLevel := c.PostForm("student_level")
@@ -63,6 +94,50 @@ func AddTutor(c *gin.Context) {
 	c.JSON(http.StatusOK, messageDao.InsertTutor(&tutor))
 }
 
+/*
+	查看家教信息
+*/
+func LookTutor(c *gin.Context) {
+	mid := c.Query("mid")
+	tutor := messageData.Tutor{
+		Mid: mid,
+	}
+	if messageDao.FindTutor(&tutor) == false {
+		c.JSON(http.StatusOK, common.FailResponse(code.DBQueryErrorCode))
+		return
+	}
+	key := fmt.Sprintf("%v:%v:%v", config.CityCodeKey, commonDao.QueryCity(tutor.City), config.ViewListKey)
+	redis.ZDel(key, mid)
+	views := common.StrToInt(redis.GetValue(fmt.Sprintf("%v:%v", config.ViewKey, mid))) + 1
+	redis.UpdateValue(fmt.Sprintf("%v:%v", config.ViewKey, mid), strconv.Itoa(views))
+	redis.ZAdd(key, mid, views)
+	message := messageData.Message{
+		Mid: mid,
+	}
+	messageDao.FindMessage(&message)
+	tutorInfo := response.TutorInfo{
+		Mid:               mid,
+		Name:              tutor.Name,
+		City:              tutor.City,
+		Local:             tutor.Local,
+		OwnAccountId:      tutor.OwnAccountId,
+		StudentGender:     tutor.StudentGender,
+		StudentLevel:      tutor.StudentLevel,
+		Salary:            tutor.Salary,
+		Describe:          tutor.Describe,
+		Views:             views,
+		AppointmentNumber: message.AppointmentNumber,
+		CreateTime:        common.TimeToTime(message.CreateTime),
+	}
+	tutorResponse := response.TutorResponse{
+		List: []response.TutorInfo{tutorInfo},
+	}
+	c.JSON(http.StatusOK, common.SuccessResponse(tutorResponse))
+}
+
+/*
+	更新家教信息
+*/
 func UpdateTutor(c *gin.Context) {
 	userId := c.PostForm("user_id")
 	studentLevel := c.PostForm("student_level")
@@ -101,6 +176,9 @@ func UpdateTutor(c *gin.Context) {
 	c.JSON(http.StatusOK, messageDao.UpdateTutor(&tutor))
 }
 
+/*
+	删除信息
+*/
 func DeleteMessage(mid string) bool {
 	message := messageData.Message{
 		Mid: mid,
@@ -108,6 +186,9 @@ func DeleteMessage(mid string) bool {
 	return messageDao.DeleteMessage(&message)
 }
 
+/*
+	删除家教信息
+*/
 func DeleteTutor(c *gin.Context) {
 	mid := c.Query("mid")
 	tutor := messageData.Tutor{
@@ -120,54 +201,29 @@ func DeleteTutor(c *gin.Context) {
 	}
 }
 
-func QueryTutor(c *gin.Context) {
-	mid := c.Query("mid")
-	tutor := messageData.Tutor{
-		Mid: mid,
-	}
-	if messageDao.FindTutor(&tutor) == false {
-		c.JSON(http.StatusOK, common.FailResponse(code.DBQueryErrorCode))
-		return
-	}
-	key := fmt.Sprintf("%v:%v:%v", config.CityCodeKey, commonDao.QueryCity(tutor.City), config.ViewListKey)
-	redis.ZDel(key, mid)
-	views := common.StrToInt(redis.GetValue(fmt.Sprintf("%v:%v", config.ViewKey, mid))) + 1
-	redis.UpdateValue(fmt.Sprintf("%v:%v", config.ViewKey, mid), strconv.Itoa(views))
-	redis.ZAdd(key, mid, views)
-	message := messageData.Message{
-		Mid: mid,
-	}
-	messageDao.FindMessage(&message)
-	tutorInfo := response.TutorInfo{
-		Mid:               mid,
-		Name:              tutor.Name,
-		City:              tutor.City,
-		Local:             tutor.Local,
-		OwnAccountId:      tutor.OwnAccountId,
-		StudentGender:     tutor.StudentGender,
-		StudentLevel:      tutor.StudentLevel,
-		Salary:            tutor.Salary,
-		Describe:          tutor.Describe,
-		Views:             views,
-		AppointmentNumber: message.AppointmentNumber,
-		CreateTime:        common.TimeToTime(message.CreateTime),
-	}
-	tutorResponse := response.TutorResponse{
-		List: []response.TutorInfo{tutorInfo},
-	}
-	c.JSON(http.StatusOK, common.SuccessResponse(tutorResponse))
+/*
+	查询三日内信息
+*/
+func QueryThreeDayTutor(c *gin.Context) {
+	c.JSON(http.StatusOK, messageDao.QueryThreeDayTutor())
 }
 
-func QueryWeekTutor(c *gin.Context) {
-	c.JSON(http.StatusOK, messageDao.QueryWeekTutor())
-}
-
+/*
+	查询浏览Top10
+*/
 func QueryTop10Tutor(c *gin.Context) {
 	city := c.Query("city")
-	fmt.Println(city)
 	c.JSON(http.StatusOK, messageDao.QueryTop10Tutor(city))
 }
 
+func QuerySalaryTutor(c *gin.Context) {
+	city := c.Query("city")
+	c.JSON(http.StatusOK, messageDao.QuerySalary(city))
+}
+
+/*
+	翻页查询所有信息
+*/
 func QueryPageTutor(c *gin.Context) {
 	city, _ := com.UrlDecode(c.Query("city"))
 	page := common.StrToInt(c.Query("page"))
@@ -175,6 +231,9 @@ func QueryPageTutor(c *gin.Context) {
 	c.JSON(http.StatusOK, messageDao.QueryPageTutor(city, page, pageSize))
 }
 
+/*
+	判断是否预约
+*/
 func JudgeAppointment(c *gin.Context) {
 	userId := commonController.GetId(c)
 	mId := c.Query("m_id")
@@ -186,6 +245,9 @@ func JudgeAppointment(c *gin.Context) {
 	}
 }
 
+/*
+	预约家教逻辑
+*/
 func AppointmentTutor(c *gin.Context) {
 	userId := commonController.GetId(c)
 	mId := c.Query("m_id")

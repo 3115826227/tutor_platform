@@ -3,6 +3,7 @@ package messageDao
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/MYSQL"
+	"go.uber.org/zap"
 	"tutor_platform/src/common"
 	"tutor_platform/src/config"
 	"tutor_platform/src/config/code"
@@ -11,6 +12,7 @@ import (
 	"tutor_platform/src/dao/commonDao"
 	"tutor_platform/src/data/messageData"
 	"tutor_platform/src/response"
+	"tutor_platform/src/util/log"
 	"tutor_platform/src/util/redis"
 )
 
@@ -134,7 +136,7 @@ func BatchQueryTutor(idList []string) []response.TutorInfo {
 	return GetTutorList(res)
 }
 
-func QueryWeekTutor() interface{} {
+func QueryThreeDayTutor() interface{} {
 	res, err := DB.Query(sql.QueryWeekSQL())
 	if err != nil {
 		fmt.Println(err)
@@ -176,20 +178,30 @@ func GetTutorInfo(mid string, tutorList []response.TutorInfo) response.TutorInfo
 
 func QueryTop10Tutor(city string) interface{} {
 	key := fmt.Sprintf("%v:%v:%v", config.CityCodeKey, commonDao.QueryCity(city), config.ViewListKey)
-	idViewMap := redis.ZRevRange(key, 10)
+	idViewList := redis.ZRevRange(key, 10)
+	log.Logger.Info("%v", zap.String("浏览排名", fmt.Sprintf("%v", idViewList)))
 	idList := make([]string, 0)
-	for id := range idViewMap {
-		idList = append(idList, id)
+	idViewMap := make(map[string]int)
+	for _, data := range idViewList {
+		if data.Member == "" {
+			continue
+		}
+		idViewMap[data.Member] = data.Score
+		idList = append(idList, data.Member)
 	}
 	messageList := BatchQueryMessage(idList)
 	tutorInfoList := BatchQueryTutor(idList)
+	tutorResponseMap := make(map[string]response.TutorInfo)
 	tutorResponseList := make([]response.TutorInfo, 0)
 	for _, message := range messageList {
 		tutorInfo := GetTutorInfo(message.Mid, tutorInfoList)
 		tutorInfo.CreateTime = common.TimeToStr(message.CreateTime)
 		tutorInfo.Views = idViewMap[message.Mid]
 		tutorInfo.AppointmentNumber = message.AppointmentNumber
-		tutorResponseList = append(tutorResponseList, tutorInfo)
+		tutorResponseMap[message.Mid] = tutorInfo
+	}
+	for _, data := range idViewList {
+		tutorResponseList = append(tutorResponseList, tutorResponseMap[data.Member])
 	}
 	return common.SuccessResponse(response.TutorResponse{
 		List: tutorResponseList,
@@ -239,8 +251,8 @@ func QueryPageTutor(city string, page, pageSize int) interface{} {
 	})
 }
 
-func QueryMessageList(recruitId string, page, pageSize int) interface{} {
-	res, err := DB.Query(fmt.Sprintf("select * from message where own_account_id=%v order by create_time desc limit %v,%v", recruitId, page, pageSize))
+func QueryMessageList(recruitId string) interface{} {
+	res, err := DB.Query(fmt.Sprintf("select * from message where own_account_id=%v order by create_time desc limit 10", recruitId))
 	if err != nil {
 		return common.FailResponse(code.DBQueryErrorCode)
 	}
@@ -258,6 +270,38 @@ func QueryMessageList(recruitId string, page, pageSize int) interface{} {
 		tutorInfo.Views = views
 		tutorInfo.AppointmentNumber = message.AppointmentNumber
 		tutorResponseList = append(tutorResponseList, tutorInfo)
+	}
+	return common.SuccessResponse(response.TutorResponse{
+		List: tutorResponseList,
+	})
+}
+
+func QuerySalary(city string) interface{} {
+	sql := "select * from tutor order by salary desc limit 10"
+	res, err := DB.Query(sql)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	idList := make([]string, 0)
+	for _, data := range res {
+		mid := string(data["mid"])
+		idList = append(idList, mid)
+	}
+	messageList := BatchQueryMessage(idList)
+	tutorInfoList := BatchQueryTutor(idList)
+	tutorResponseMap := make(map[string]response.TutorInfo)
+	tutorResponseList := make([]response.TutorInfo, 0)
+	for _, message := range messageList {
+		views := common.StrToInt(redis.GetValue(fmt.Sprintf("%v:%v", config.ViewKey, message.Mid)))
+		tutorInfo := GetTutorInfo(message.Mid, tutorInfoList)
+		tutorInfo.CreateTime = common.TimeToStr(message.CreateTime)
+		tutorInfo.Views = views
+		tutorInfo.AppointmentNumber = message.AppointmentNumber
+		tutorResponseMap[message.Mid] = tutorInfo
+	}
+	for _, id := range idList {
+		tutorResponseList = append(tutorResponseList, tutorResponseMap[id])
 	}
 	return common.SuccessResponse(response.TutorResponse{
 		List: tutorResponseList,

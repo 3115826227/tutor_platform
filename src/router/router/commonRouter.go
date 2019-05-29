@@ -2,12 +2,12 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"tutor_platform/src/controller"
 	"tutor_platform/src/controller/messageController"
 	"tutor_platform/src/controller/recruitController"
 	"tutor_platform/src/controller/studentController"
 	"tutor_platform/src/router/publicRouterUrl"
-	"net/http"
 )
 
 func CommonRouter(commonRouter *gin.Engine) {
@@ -33,9 +33,10 @@ func CommonRouter(commonRouter *gin.Engine) {
 	commonRouter.POST(publicRouterUrl.RecruitRegister, recruitController.Register)
 	commonRouter.POST(publicRouterUrl.LookStudentInfo, messageController.LookStudentInfo)
 	commonRouter.POST(publicRouterUrl.LookRecruitInfo, messageController.LookRecruitInfo)
-	commonRouter.GET(publicRouterUrl.QueryTutor, messageController.QueryTutor)
-	commonRouter.GET(publicRouterUrl.QueryWeekTutor, messageController.QueryWeekTutor)
+	commonRouter.GET(publicRouterUrl.LookTutor, messageController.LookTutor)
+	commonRouter.GET(publicRouterUrl.QueryThreeDayTutor, messageController.QueryThreeDayTutor)
 	commonRouter.GET(publicRouterUrl.QueryTop10Tutor, messageController.QueryTop10Tutor)
 	commonRouter.GET(publicRouterUrl.QueryPageTutor, messageController.QueryPageTutor)
+	commonRouter.GET(publicRouterUrl.QuerySalaryTutor, messageController.QuerySalaryTutor)
 	//commonRouter.POST(publicRouterUrl.SelectCity, messageController.SelectCity)
 }

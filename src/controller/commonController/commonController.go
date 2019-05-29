@@ -1,49 +1,68 @@
 package commonController
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 	"tutor_platform/src/common"
 	"tutor_platform/src/config"
 	"tutor_platform/src/config/code"
 	"tutor_platform/src/dao/commonDao"
+	"tutor_platform/src/dao/messageDao"
 	"tutor_platform/src/dao/recruitDao"
 	"tutor_platform/src/dao/studentDao"
 	"tutor_platform/src/data/commonData"
+	"tutor_platform/src/data/messageData"
 	"tutor_platform/src/data/recruitData"
 	"tutor_platform/src/data/studentData"
 	"tutor_platform/src/util/redis"
-	"net/http"
-	"time"
 )
 
+/*
+	用于注册随机id功能
+*/
 func GenerateUserId() string {
 	userId := common.GetUserId()
+	//判断是否已经存在该id用户
 	if commonDao.ExistLogin(&commonData.Login{UserId: userId}) == false {
 		return userId
 	}
 	return GenerateUserId()
 }
 
-func GetInfo(c *gin.Context) interface{} {
-	userId := GetId(c)
-	var user = &commonData.User{
-		UserId: userId,
-	}
-	return commonDao.GetInfo(user)
-}
-
-func Logout(c *gin.Context) interface{} {
-	userId := GetId(c)
-	redis.DelValue(userId)
-	return common.SuccessResponse(nil)
-}
-
+/*
+	公共获取用户id逻辑
+*/
 func GetId(c *gin.Context) string {
 	user, _ := c.Get("token")
 	return (user.(*commonData.User)).UserId
 }
 
-func Register(c *gin.Context, identify string) {
+/*
+	公共获取基本信息逻辑
+*/
+func CommonGetUserBaseInfo(c *gin.Context) interface{} {
+	userId := GetId(c)
+	var user = &commonData.User{
+		UserId: userId,
+	}
+	return commonDao.QueryUserBaseInfo(user)
+}
+
+/*
+	公共退出登录逻辑
+*/
+func CommonLogout(c *gin.Context) interface{} {
+	userId := GetId(c)
+	redis.DelValue(userId)
+	return common.SuccessResponse(nil)
+}
+
+/*
+	公共注册逻辑
+*/
+func CommonRegister(c *gin.Context, identify string) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 	name := c.PostForm("name")
@@ -108,7 +127,10 @@ func Register(c *gin.Context, identify string) {
 	}
 }
 
-func Personal(c *gin.Context, SuccessHTML string, FailHTML string) {
+/*
+	公共进入个人主页逻辑
+*/
+func CommonEnterHomePage(c *gin.Context, SuccessHTML string, FailHTML string) {
 	userId := c.Query("user_id")
 	accountId := c.Query("account_id")
 	if redis.GetValue(userId) == accountId && accountId != "" {
@@ -118,8 +140,11 @@ func Personal(c *gin.Context, SuccessHTML string, FailHTML string) {
 	}
 }
 
-func UpdateLogin(c *gin.Context, Identify string) {
-	userId := c.PostForm("user_id")
+/*
+	公共更新登录信息逻辑
+*/
+func CommonUpdateLogin(c *gin.Context, Identify string) {
+	userId := GetId(c)
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 	login := &commonData.Login{
@@ -135,4 +160,23 @@ func UpdateLogin(c *gin.Context, Identify string) {
 	} else {
 		c.JSON(http.StatusOK, common.FailResponse(code.PasswordErrorCode))
 	}
+}
+
+/*
+	判断预约是否存在逻辑
+*/
+func JudgeAppointmentExist(recruitId, studentId, mId string) bool {
+	message := messageData.Message{
+		Mid: mId,
+	}
+	ok := messageDao.FindMessage(&message)
+	if ok == false || recruitId != message.OwnAccountId {
+		return false
+	}
+	studentKey := fmt.Sprintf("%v:%v", config.StudentAppointmentKey, studentId)
+	messageKey := fmt.Sprintf("%v:%v", config.MessageAppointmentKey, mId)
+	if redis.SJudgeExist(studentKey, mId) == false || redis.SJudgeExist(messageKey, mId) == false {
+		return false
+	}
+	return true
 }

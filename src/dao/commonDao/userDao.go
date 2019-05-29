@@ -1,6 +1,7 @@
 package commonDao
 
 import (
+	"fmt"
 	"tutor_platform/src/common"
 	"tutor_platform/src/config/code"
 	. "tutor_platform/src/dao"
@@ -12,6 +13,7 @@ import (
 func InsertUser(user *commonData.User) bool {
 	_, err := DB.Insert(user)
 	if err != nil {
+		fmt.Println(err)
 		return false
 	}
 	return true
@@ -30,13 +32,15 @@ func QueryUser(user *commonData.User) interface{} {
 	return common.SuccessResponse(user)
 }
 
-func GetInfo(user *commonData.User) interface{} {
+func QueryUserBaseInfo(user *commonData.User) interface{} {
 	has, _ := DB.Get(user)
 	if has {
 		userId := user.UserId
+		username := user.UserName
 		accountId := redis.GetValue(userId)
 		return common.SuccessResponse(response.UserInfoResponse{
 			UserId:    userId,
+			UserName:  username,
 			Name:      user.Name,
 			AccountId: accountId,
 			Location:  common.GetCity(user.City),

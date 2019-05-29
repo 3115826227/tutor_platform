@@ -14,6 +14,7 @@ type City struct {
 
 type UserInfoResponse struct {
 	UserId    string `json:"user_id"`
+	UserName  string `json:"username"`
 	Name      string `json:"name"`
 	AccountId string `json:"account_id"`
 	Location  City   `json:"location"`
@@ -22,6 +23,7 @@ type UserInfoResponse struct {
 
 type StudentInfoResponse struct {
 	UserId             string `json:"user_id"`
+	UserName           string `json:"user_name"`
 	Name               string `json:"name"`
 	Location           City   `json:"location"`
 	Identify           string `json:"identify"`
