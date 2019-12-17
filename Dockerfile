@@ -16,4 +16,4 @@ COPY --from=0 /go/src/tutor_platform/localtime /etc/localtime
 
 EXPOSE 8080
 
-CMD exec ./tutor_platform >>/var/log/tutor_platform/web.log 2>>/var/log/tutor_platform/web.log
+CMD exec ./tutor_platform  >>/tutor_platform/logs/access.log 2>>/tutor_platform/logs/runtime.log
